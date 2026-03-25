@@ -1,39 +1,22 @@
-from flask import Flask, render_template, request
-import numpy as np
-import pickle
-
-app = Flask(__name__)
-
-# Load model
-model = pickle.load(open("model.pkl", "rb"))
-
-@app.route("/")
-def home():
-    return render_template("index.html")
-
-@app.route("/predict", methods=["POST"])
+@app.route("/predict", methods=["POST", "GET"])
 def predict():
-    try:
-        followers = int(request.form["followers"])
-        following = int(request.form["following"])
-        posts = int(request.form["posts"])
-        bio = int(request.form["bio"])
-        pic = int(request.form["pic"])
-        verified = int(request.form["verified"])
+    if request.method == "POST":
+        try:
+            followers = int(request.form.get("followers", 0))
+            following = int(request.form.get("following", 0))
+            posts = int(request.form.get("posts", 0))
+            bio = int(request.form.get("bio", 0))
+            pic = int(request.form.get("pic", 0))
+            verified = int(request.form.get("verified", 0))
 
-        data = np.array([[followers, following, posts, bio, pic, verified]])
+            features = [[followers, following, posts, bio, pic, verified]]
+            prediction = model.predict(features)
 
-        result = model.predict(data)
+            result = "Fake Profile" if prediction[0] == 1 else "Real Profile"
 
-        if result[0] == 1:
-            prediction = "Fake Profile ❌"
-        else:
-            prediction = "Real Profile ✅"
+            return render_template("index.html", prediction_text=result)
 
-        return render_template("index.html", prediction_text=prediction)
+        except Exception as e:
+            return f"Error: {e}"
 
-    except:
-        return render_template("index.html", prediction_text="Error in input")
-
-if __name__ == "__main__":
-    app.run(debug=True)
+    return render_template("index.html")
