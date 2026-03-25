@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fake Profile Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+    <h1>Fake Profile Detection</h1>
+
+    <form action="/predict" method="post">
+
+        <input type="number" name="followers" placeholder="Followers" required>
+        <input type="number" name="following" placeholder="Following" required>
+        <input type="number" name="posts" placeholder="Posts" required>
+        <input type="number" name="bio" placeholder="Bio Length" required>
+
+        <select name="pic">
+            <option value="1">Profile Pic: Yes</option>
+            <option value="0">Profile Pic: No</option>
+        </select>
+
+        <select name="verified">
+            <option value="1">Verified: Yes</option>
+            <option value="0">Verified: No</option>
+        </select>
+
+        <button type="submit">Check Profile</button>
+
+    </form>
+
+    <h2>{{ prediction_text }}</h2>
+</div>
+
+</body>
+</html>
